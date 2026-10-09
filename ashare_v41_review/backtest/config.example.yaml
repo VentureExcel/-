@@ -1,0 +1,43 @@
+# ───────── 本地回测配置(复制为 config.yaml 后按你的库结构修改"物理列名")─────────
+db:
+  # SQLite:  sqlite:///D:/data/local_kline.db
+  # MySQL:   mysql+pymysql://user:pwd@127.0.0.1:3306/quant     (需 pip install sqlalchemy pymysql)
+  # Postgres:postgresql+psycopg2://user:pwd@127.0.0.1:5432/quant
+  url: sqlite:///D:/data/local_kline.db
+
+period:            # 回测区间;warmup_days 为指标预热(取更早数据,但不产生交易)
+  start: "2026-01-05"
+  end:   "2026-10-09"
+  warmup_days: 400
+
+# 左边=逻辑字段(勿改),右边=你库里的真实列名。时间必须是"收盘后可得"的当日值。
+tables:
+  kline:                      # 日K:必须含退市/ST/停牌股(无幸存者偏差)
+    table: local_kline_daily
+    columns: {date: trade_date, code: code, open: open, high: high, low: low, close: close,
+              volume: volume, amount: amount, turnover: turnover_rate, mktcap: float_mv_yi,
+              adj: adj_factor, is_st: is_st, susp: is_suspended}
+    # where: "trade_date >= '2024-01-01'"
+  flow:                       # 历史资金流(逐日、逐股),单位务必核对:元 还是 万元
+    table: money_flow_daily
+    columns: {date: trade_date, code: code, main_net: main_net_inflow, small_net: small_net_inflow}
+  industry:
+    table: stock_industry
+    columns: {code: code, industry: sw_l1_name}
+  bench:                      # 指数日线:沪深300 / 中证500 / 中证1000 / 中证全指
+    sql: "SELECT trade_date AS date, index_name AS name, close FROM index_daily"
+    columns: {date: date, name: name, close: close}
+
+backtest:
+  hold: 5
+  top_n: 10
+  ind_cap: 2
+  stop_loss: 0.07
+  capital: 5000000
+  commission: 0.00025
+  stamp: 0.0005
+  slip_bps: 10
+
+v41:  {top_pct: 0.15, overheat_k: 1.5}
+v42:  {sleeve: mom}
+fast: false
