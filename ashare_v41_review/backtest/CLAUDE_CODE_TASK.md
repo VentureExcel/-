@@ -4,6 +4,13 @@
 > 目标:用**本地数据库**对"主力净流入策略 V4.1"做可信回测,并检验 V4.2 优化方案。
 > 原则:**先证明数据可信、引擎无前视,再谈收益。**任何一步不通过,停下来汇报,不要往下跑。
 
+
+## 路径约定(macOS 示例,以探库结果为准)
+- 本目录:`~/quant_review/ashare_v41_review/backtest`(任务书与代码都在这里)。
+- 数据库候选:`~/投系统/resonance-system/data/market_kline.db`(SQLite,含 `flow_daily` 资金流表)。**是否就是它、各表字段与单位,必须在步骤 1 探库后写进 `out/db_schema.md` 请我确认,不得凭记忆假设。**
+- 生产选股脚本:路径未知。步骤 1 里用 `find ~ -name "v4_*.py" -o -name "run_*.py" 2>/dev/null` 在 `~/投系统` 下查找并**列给我确认**;找不到就停下来问我,不要猜。
+- SQLite 的 config 写法:`db.url: sqlite:////Users/<你>/投系统/resonance-system/data/market_kline.db`(四个斜杠 = 绝对路径)。
+
 ## 0 环境
 - Python ≥3.10;`pip install pandas numpy pyyaml openpyxl matplotlib`;数据库非 SQLite 时再装 `sqlalchemy` 和驱动。
 - 只读访问数据库;所有产物写到 `out/`,并把每次运行的 config、git/commit 标识、随机种子记入 `out/run_log.md`。
